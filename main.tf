@@ -5,10 +5,12 @@ variable "resource_group_name" {
 
 variable "dns_zone_name" {
   type = "string"
+  default = "changeme"
 }
 
 variable "storage_account_name" {
   type = "string"
+  default = "changeme"
 }
 
 resource "azurerm_resource_group" "basics" {
