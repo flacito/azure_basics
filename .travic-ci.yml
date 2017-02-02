@@ -1,0 +1,9 @@
+language: go
+
+sudo: false
+
+script:
+  - ./tf_wrapper.sh apply -var 'dns_zone_name=example.com' -var 'storage_account_name=uniquesaname123'
+  - ./push_state_to_azure.sh uniquesaname123
+  - ./tf_wrapper.sh destroy -force
+  
