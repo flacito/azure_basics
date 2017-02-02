@@ -3,7 +3,7 @@ language: c
 sudo: false
 
 before_install:
-  - curl https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_0.8.5_linux_amd64.zip
+  - curl https://releases.hashicorp.com/terraform/0.8.5/terraform_0.8.5_linux_amd64.zip
 
 script:
   - ./terraform apply -var 'dns_zone_name=example.com' -var 'storage_account_name=uniquesaname123'
