@@ -48,6 +48,7 @@ function smoke {
   printf "Running smoke test using ${SEED}.\n"
 
   terraform apply -var "resource_group_name=${SEED}" -var "dns_zone_name=example.com" -var "storage_account_name=${SEED}"
+  terraform show
   ./push_state_to_azure.sh ${SEED} ${SEED}
   terraform destroy -force
 
