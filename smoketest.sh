@@ -40,14 +40,16 @@ function setup {
 
   curl -o ${TF_ZIP} ${url}
   unzip ${TF_ZIP} -d ${TF_PATH}
+
+  PATH=${TF_PATH}:${PATH}
 }
 
 function smoke {
   printf "Running smoke test using ${SEED}.\n"
 
-  ${TF_PATH}/terraform apply -var "resource_group_name=${SEED}" -var "dns_zone_name=example.com" -var "storage_account_name=${SEED}"
+  terraform apply -var "resource_group_name=${SEED}" -var "dns_zone_name=example.com" -var "storage_account_name=${SEED}"
   ./push_state_to_azure.sh ${SEED} ${SEED}
-  ${TF_PATH}/terraform destroy -force
+  terraform destroy -force
 
   rm -Rf ${TF_PATH}
   rm -Rf .terraform
