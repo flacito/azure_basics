@@ -1,4 +1,6 @@
-## azure_basics
+# azure_basics
+
+[![Build Status](https://travis-ci.org/flacito/azure_basics.svg?branch=master)](https://travis-ci.org/flacito/azure_basics)
 
 Creates some basics in Azure that you can use to create a Continuous Delivery (CD) pipeline. Currently it just:
 

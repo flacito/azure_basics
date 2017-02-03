@@ -23,12 +23,8 @@ function setup {
   # Setup terraform version
   TF_VERSION=${TERRAFORM_VERSION='0.8.5'}
 
-  # Setup temp directory
-  if [[ "$platform" == 'windows' ]]; then
-    TEMP_DIRECTORY="${TEMP}"
-  else
-    TEMP_DIRECTORY="${TMPDIR}"
-  fi
+  TEMP_DIRECTORY="./tmp"
+  mkdir ${TEMP_DIRECTORY}
 
   # Setup paths
   TF_ZIP="${TEMP_DIRECTORY}/terraform_${TF_VERSION}.zip"
