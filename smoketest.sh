@@ -33,7 +33,6 @@ function setup {
   # Setup paths
   TF_ZIP="${TEMP_DIRECTORY}/terraform_${TF_VERSION}.zip"
   TF_PATH="${TEMP_DIRECTORY}/terraform_${TF_VERSION}/"
-  PATH=$TF_PATH:$PATH
 
   if [[ "$platform" == 'linux' ]]; then
     url="https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip"
@@ -50,9 +49,9 @@ function setup {
 function smoke {
   printf "Running smoke test using ${SEED}.\n"
 
-  terraform apply -var "resource_group_name=${SEED}" -var "dns_zone_name=example.com" -var "storage_account_name=${SEED}"
+  ${TF_PATH}/terraform apply -var "resource_group_name=${SEED}" -var "dns_zone_name=example.com" -var "storage_account_name=${SEED}"
   ./push_state_to_azure.sh ${SEED} ${SEED}
-  terraform destroy -force
+  ${TF_PATH}/terraform destroy -force
 
   rm -Rf ${TF_PATH}
   rm -Rf .terraform
