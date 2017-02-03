@@ -1,9 +1,63 @@
 #!/bin/bash
-wget https://releases.hashicorp.com/terraform/0.8.5/terraform_0.8.5_linux_amd64.zip
-unzip ./terraform_0.8.5_linux_amd64.zip
-export PATH=$PATH\:./
-rm ./terraform_0.8.5_linux_amd64.zip
+function identify_platform {
+  uname=`uname`
+  if [[ "$uname" == 'Linux' ]]; then
+    platform="linux"
+  elif [[ "$uname" == 'Darwin' ]]; then
+    platform="macos"
+  elif [[ "$uname" == MINGW64* ]]; then
+    platform="windows"
+  fi
+}
 
-terraform apply -var 'dns_zone_name=example.com' -var 'storage_account_name=uniquesaname123'
-./push_state_to_azure.sh uniquesaname123
-terraform destroy -force
+function setup {
+  SEED=$(( ( RANDOM % 1000 )  + 100 ))
+  SEED="basicstest${SEED}"
+
+  rm -Rf ${TF_PATH}
+  rm -Rf .terraform
+  rm -Rf *.tfstate*
+
+  identify_platform
+
+  # Setup terraform version
+  TF_VERSION=${TERRAFORM_VERSION='0.8.5'}
+
+  # Setup temp directory
+  if [[ "$platform" == 'windows' ]]; then
+    TEMP_DIRECTORY="${TEMP}"
+  else
+    TEMP_DIRECTORY="${TMPDIR}"
+  fi
+
+  # Setup paths
+  TF_ZIP="${TEMP_DIRECTORY}/terraform_${TF_VERSION}.zip"
+  TF_PATH="${TEMP_DIRECTORY}/terraform_${TF_VERSION}/"
+  PATH=$TF_PATH:$PATH
+
+  if [[ "$platform" == 'linux' ]]; then
+    url="https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip"
+  elif [[ "$platform" == 'macos' ]]; then
+    url="https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_darwin_amd64.zip"
+  elif [[ "$platform" == 'windows' ]]; then
+    url="https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_windows_amd64.zip"
+  fi
+
+  curl -o ${TF_ZIP} ${url}
+  unzip ${TF_ZIP} -d ${TF_PATH}
+}
+
+function smoke {
+  printf "Running smoke test using ${SEED}.\n"
+
+  terraform apply -var "resource_group_name=${SEED}" -var "dns_zone_name=example.com" -var "storage_account_name=${SEED}"
+  ./push_state_to_azure.sh ${SEED} ${SEED}
+  terraform destroy -force
+
+  rm -Rf ${TF_PATH}
+  rm -Rf .terraform
+  rm -Rf *.tfstate*
+}
+
+setup
+smoke
